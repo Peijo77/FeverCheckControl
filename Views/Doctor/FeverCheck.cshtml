@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Fever Check";
+}
+
+@using (Html.BeginForm("CheckTemperature", "Doctor", FormMethod.Post, new { id = "temperatureForm" }))
+{
+    <label for="temperature">Enter your temperature ℃:</label>
+    <input type="number" name="temperature" id="temperature" step="any" required>
+    <button type="submit" id="checkButton">Check Fever</button>
+    <div id="result"></div>
+}
+
+<style>
+    .fever-message {
+        color: red;
+        text-transform: uppercase;
+        
+    }
+
+    .normal-message {
+        color: green;
+        text-transform: uppercase;
+        
+    }
+
+    .hypothermia-message {
+        color: blue;
+        text-transform: uppercase;
+        
+    }
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#temperatureForm').submit(function (event) {
+            event.preventDefault();
+            var temperature = $('#temperature').val();
+            console.log('Submitting temperature:', temperature); // Loggar temperaturen
+            $.ajax({
+                url: '@Url.Action("CheckTemperature", "Doctor")', // Använd Razor-syntax för att få rätt URL
+                method: 'POST',
+                data: { temperature: temperature },
+                success: function (response) {
+                    console.log('Response from server:', response); // Loggar svaret
+                    var resultDiv = $('#result');
+                    resultDiv.removeClass('fever-message normal-message hypothermia-message');
+
+                    if (response === "YOU HAVE FEVER") {
+                        resultDiv.addClass('fever-message');
+                    } else if (response === "YOUR TEMPERATURE IS NORMAL") {
+                        resultDiv.addClass('normal-message');
+                    } else if (response === "YOU MIGHT HAVE HYPOTHERMIA") {
+                        resultDiv.addClass('hypothermia-message');
+                    }
+
+                    resultDiv.css('font-weight', 'bold');
+                    resultDiv.text(response);
+                },
+                error: function () {
+                    $('#result').text('An error occurred. Please try again later.');
+                }
+            });
+        });
+    });
+</script>
+
