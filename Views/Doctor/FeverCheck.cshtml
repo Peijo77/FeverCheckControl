@@ -35,7 +35,7 @@
     $(document).ready(function () {
         $('#temperatureForm').submit(function (event) {
             event.preventDefault();
-            var temperature = $('#temperature').val();
+            var temperature = $('#temperature').val().replace(".", ",");
             console.log('Submitting temperature:', temperature); // Loggar temperaturen
             $.ajax({
                 url: '@Url.Action("CheckTemperature", "Doctor")', // Använd Razor-syntax för att få rätt URL
@@ -44,6 +44,7 @@
                 success: function (response) {
                     console.log('Response from server:', response); // Loggar svaret
                     var resultDiv = $('#result');
+                    
                     resultDiv.removeClass('fever-message normal-message hypothermia-message');
 
                     if (response === "YOU HAVE FEVER") {
